@@ -5,8 +5,36 @@ import com.jsoniter.spi.JsonException;
 import com.jsoniter.spi.Slice;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 class IterImplForStreaming {
+
+    // Branch coverage
+    private static final Map<String, Boolean> branchCoverage = new HashMap<>();
+
+    static {
+        branchCoverage.put("1_EnterOuterLoop", false);
+        branchCoverage.put("2_EnterInnerLoop", false);
+        branchCoverage.put("3_Expand", false);
+        branchCoverage.put("4_CaseDot", false);
+        branchCoverage.put("5_Casee", false);
+        branchCoverage.put("6_CaseE", false);
+        branchCoverage.put("7_Case-", false);
+        branchCoverage.put("8_Case+", false);
+        branchCoverage.put("9_Case0", false);
+        branchCoverage.put("10_Case1", false);
+        branchCoverage.put("11_Case2", false);
+        branchCoverage.put("12_Case3", false);
+        branchCoverage.put("13_Case4", false);
+        branchCoverage.put("14_Case5", false);
+        branchCoverage.put("15_Case6", false);
+        branchCoverage.put("16_Case7", false);
+        branchCoverage.put("17_Case8", false);
+        branchCoverage.put("18_Case9", false);
+        branchCoverage.put("19_CaseDefault", false);
+        branchCoverage.put("20_NotLoadMore", false);
+    }
 
     public static final int readObjectFieldAsHash(JsonIterator iter) throws IOException {
         if (nextToken(iter) != '"') {
@@ -572,8 +600,11 @@ class IterImplForStreaming {
         int j = 0;
         boolean dotFound = false;
         for (; ; ) {
+            branchCoverage.put("1_EnterOuterLoop", true);
             for (int i = iter.head; i < iter.tail; i++) {
+                branchCoverage.put("2_EnterInnerLoop", true);
                 if (j == iter.reusableChars.length) {
+                    branchCoverage.put("3_Expand", true);
                     char[] newBuf = new char[iter.reusableChars.length * 2];
                     System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                     iter.reusableChars = newBuf;
@@ -581,25 +612,41 @@ class IterImplForStreaming {
                 byte c = iter.buf[i];
                 switch (c) {
                     case '.':
+                        branchCoverage.put("4_CaseDot", true);
                     case 'e':
+                        branchCoverage.put("5_Casee", true);
                     case 'E':
+                        branchCoverage.put("6_CaseE", true);
                         dotFound = true;
                         // fallthrough
                     case '-':
+                        branchCoverage.put("7_Case-", true);
                     case '+':
+                        branchCoverage.put("8_Case+", true);
                     case '0':
+                        branchCoverage.put("9_Case0", true);
                     case '1':
+                        branchCoverage.put("10_Case1", true);  
                     case '2':
+                        branchCoverage.put("11_Case2", true);
                     case '3':
+                        branchCoverage.put("12_Case3", true);
                     case '4':
+                        branchCoverage.put("13_Case4", true);
                     case '5':
+                        branchCoverage.put("14_Case5", true);
                     case '6':
+                        branchCoverage.put("15_Case6", true);
                     case '7':
+                        branchCoverage.put("16_Case7", true);  
                     case '8':
+                        branchCoverage.put("17_Case8", true);
                     case '9':
+                        branchCoverage.put("18_Case9", true);
                         iter.reusableChars[j++] = (char) c;
                         break;
                     default:
+                        branchCoverage.put("19_CaseDefault", true);
                         iter.head = i;
                         numberChars numberChars = new numberChars();
                         numberChars.chars = iter.reusableChars;
@@ -609,6 +656,7 @@ class IterImplForStreaming {
                 }
             }
             if (!IterImpl.loadMore(iter)) {
+                branchCoverage.put("20_NotLoadMore", true);
                 iter.head = iter.tail;
                 numberChars numberChars = new numberChars();
                 numberChars.chars = iter.reusableChars;
@@ -658,6 +706,14 @@ class IterImplForStreaming {
         } catch (ArrayIndexOutOfBoundsException e) {
             iter.head = iter.tail;
             return;
+        }
+    }
+
+    // Function to print the branch coverage report after running tests. 18/20 hit 
+    public static void printCoverage() {
+        System.out.println("Branch Coverage Report for numberChars():");
+        for (Map.Entry<String, Boolean> next : branchCoverage.entrySet()) {
+            System.out.println(next.getKey() + ": " + (next.getValue() ? "Hit" : "Not Hit"));
         }
     }
 }
