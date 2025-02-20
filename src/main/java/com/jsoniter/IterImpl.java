@@ -249,41 +249,41 @@ class IterImpl {
             for (int i = iter.head; i < iter.tail; ) {
                 setBanchEntry(1); // Id 1
                 int bc = iter.buf[i++];
-                if (bc == '"') {
+                if (bc == '"') {            //Req: Test complete string
                     setBanchEntry(2); // Id 2
                     iter.head = i;
                     return j;
                 }
                 setBanchEntry(3); // Id 3
-                if (bc == '\\') {
+                if (bc == '\\') {           //Req: Test string that contains \\
                     setBanchEntry(4); // Id 4
                     bc = iter.buf[i++];
                     switch (bc) {
-                        case 'b':
+                        case 'b':           //Req: Test string that contains \\b
                         setBanchEntry(5); // Id 5
                             bc = '\b';
                             break;
-                        case 't':
+                        case 't':           //Req: Test string that contains \\t
                         setBanchEntry(6); // Id 6
                             bc = '\t';
                             break;
-                        case 'n':
+                        case 'n':           //Req: Test string that contains \\n
                         setBanchEntry(7); // Id 7
                             bc = '\n';
                             break;
-                        case 'f':
+                        case 'f':           //Req: Test string that contains \\f
                         setBanchEntry(8); // Id 8
                             bc = '\f';
                             break;
-                        case 'r':
+                        case 'r':           //Req: Test string that contains \\r
                         setBanchEntry(9);// Id 9
                             bc = '\r';
                             break;
                         case '"':
                         setBanchEntry(10);// Id 10
-                        case '/':
+                        case '/':           //Req: Test string that contains \\/
                         setBanchEntry(11);// Id 11
-                        case '\\':
+                        case '\\':          //Req: Test string that contains \\\\
                         setBanchEntry(12);// Id 12
                             break;
                         case 'u':
@@ -324,8 +324,16 @@ class IterImpl {
                             setBanchEntry(23);// Id 23
                             throw iter.reportError("readStringSlowPath", "invalid escape character: " + bc);
                     }
-
-                } else if ((bc & 0x80) != 0) {
+                
+                } 
+                /*  One possible refactoring of this function could be to separate these overarching if/elseif-statements into separate functions.
+                *   This bascally the most straight-forward way of reducing the complexity of each of the functions (since most of the complexity is just nestled if-statements).
+                *   One could, for example, make one function which handles cases with escaped characters and call that function in the first part of this if/elseif-statement
+                *   and then make one function which handles multibyte unicode issues and call that function in the second part of this if/elseif-statement.
+                *   That would basically split the complexity in two while having a rather minimal effect on performance. This code is however supposed to be well performing
+                *   so the perfomrance loss might not be worth it.
+                */
+                else if ((bc & 0x80) != 0) {          
                     setBanchEntry(24);// Id 24
                     final int u2 = iter.buf[i++];
                     if ((bc & 0xE0) == 0xC0) {
@@ -391,7 +399,7 @@ class IterImpl {
                 setBanchEntry(41);// Id 41
                 iter.reusableChars[j++] = (char) bc;
             }
-            setBanchEntry(42);// Id 42
+            setBanchEntry(42);// Id 42          //Req: Test incomplete string
             throw iter.reportError("readStringSlowPath", "incomplete string");
         } catch (IndexOutOfBoundsException e) {
             setBanchEntry(43);// Id 43
