@@ -711,9 +711,12 @@ class IterImplForStreaming {
 
     // Function to print the branch coverage report after running tests. 18/20 hit 
     public static void printCoverage() {
-        System.out.println("Branch Coverage Report for numberChars():");
+        System.out.println("Branch Coverage Report for readNumber():");
+        int count = 0;
         for (Map.Entry<String, Boolean> next : branchCoverage.entrySet()) {
             System.out.println(next.getKey() + ": " + (next.getValue() ? "Hit" : "Not Hit"));
+            if(next.getValue()){count++;}
         }
+        System.out.println("Total branch coverage is " + (100.0 * count/branchCoverage.size() + "%"));
     }
 }
