@@ -4,6 +4,8 @@ import com.jsoniter.any.Any;
 import com.jsoniter.spi.JsonException;
 import com.jsoniter.spi.Slice;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 
@@ -214,157 +216,184 @@ class IterImpl {
         return false;
     }
 
+    // funtions for DIY CC testing----------------
+    private static boolean[] branches = new boolean[50];
+
+    private static void setBanchEntry(int id){
+        branches[id] = true;
+    }
+
+    public static void writeCCToFile(){
+        File f = new File("ccResult.txt");
+        try{
+            FileWriter w = new FileWriter(f);
+            StringBuilder s = new StringBuilder();
+            for(int i= 0;i<branches.length;i++){
+                if(branches[i]){
+                    s.append("Branch "+i+": ++\n");
+                }
+                else{
+                    s.append("Branch "+i+": -\n");
+                }
+            }
+            w.write(s.toString());
+            w.close();
+        }catch(Exception e){}
+    }
+    //--------------------------------------------
+
     public final static int readStringSlowPath(JsonIterator iter, int j) throws IOException {
-        // Id 0
+        setBanchEntry(0); // Id 0
         try {
             boolean isExpectingLowSurrogate = false;
             for (int i = iter.head; i < iter.tail; ) {
-                // Id 1
+                setBanchEntry(1); // Id 1
                 int bc = iter.buf[i++];
                 if (bc == '"') {
-                    // Id 2
+                    setBanchEntry(2); // Id 2
                     iter.head = i;
                     return j;
                 }
-                // Id 3
+                setBanchEntry(3); // Id 3
                 if (bc == '\\') {
-                    // Id 4
+                    setBanchEntry(4); // Id 4
                     bc = iter.buf[i++];
                     switch (bc) {
                         case 'b':
-                        // Id 5
+                        setBanchEntry(5); // Id 5
                             bc = '\b';
                             break;
                         case 't':
-                        // Id 6
+                        setBanchEntry(6); // Id 6
                             bc = '\t';
                             break;
                         case 'n':
-                        // Id 7
+                        setBanchEntry(7); // Id 7
                             bc = '\n';
                             break;
                         case 'f':
-                        // Id 8
+                        setBanchEntry(8); // Id 8
                             bc = '\f';
                             break;
                         case 'r':
-                        // Id 9
+                        setBanchEntry(9);// Id 9
                             bc = '\r';
                             break;
                         case '"':
-                        // Id 10
+                        setBanchEntry(10);// Id 10
                         case '/':
-                        // Id 11
+                        setBanchEntry(11);// Id 11
                         case '\\':
-                        // Id 12
+                        setBanchEntry(12);// Id 12
                             break;
                         case 'u':
-                        // Id 13
+                        setBanchEntry(13);// Id 13
                             bc = (IterImplString.translateHex(iter.buf[i++]) << 12) +
                                     (IterImplString.translateHex(iter.buf[i++]) << 8) +
                                     (IterImplString.translateHex(iter.buf[i++]) << 4) +
                                     IterImplString.translateHex(iter.buf[i++]);
                             if (Character.isHighSurrogate((char) bc)) {
-                                // Id 14
+                                setBanchEntry(14);// Id 14
                                 if (isExpectingLowSurrogate) {
-                                    // Id 15
+                                    setBanchEntry(15);// Id 15
                                     throw new JsonException("invalid surrogate");
                                 } else {
-                                    // Id 16
+                                    setBanchEntry(16);// Id 16
                                     isExpectingLowSurrogate = true;
                                 }
                             } else if (Character.isLowSurrogate((char) bc)) {
-                                // Id 17
+                                setBanchEntry(17);// Id 17
                                 if (isExpectingLowSurrogate) {
-                                    // Id 18
+                                    setBanchEntry(18);// Id 18
                                     isExpectingLowSurrogate = false;
                                 } else {
-                                    // Id 19
+                                    setBanchEntry(19);// Id 19
                                     throw new JsonException("invalid surrogate");
                                 }
                             } else {
-                                // Id 20
+                                setBanchEntry(20);// Id 20
                                 if (isExpectingLowSurrogate) {
-                                    // Id 21
+                                    setBanchEntry(21);// Id 21
                                     throw new JsonException("invalid surrogate");
                                 }
-                                // Id 22
+                                setBanchEntry(21);// Id 22
                             }
                             break;
 
                         default:
-                        // Id 23
+                        setBanchEntry(23);// Id 23
                             throw iter.reportError("readStringSlowPath", "invalid escape character: " + bc);
                     }
 
                 } else if ((bc & 0x80) != 0) {
-                    // Id 24
+                    setBanchEntry(24);// Id 24
                     final int u2 = iter.buf[i++];
                     if ((bc & 0xE0) == 0xC0) {
-                        // Id 25
+                        setBanchEntry(25);// Id 25
                         bc = ((bc & 0x1F) << 6) + (u2 & 0x3F);
                     } else {
-                        // Id 26
+                        setBanchEntry(26);// Id 26
                         final int u3 = iter.buf[i++];
                         if ((bc & 0xF0) == 0xE0) {
-                            // Id 27
+                            setBanchEntry(27);// Id 27
                             bc = ((bc & 0x0F) << 12) + ((u2 & 0x3F) << 6) + (u3 & 0x3F);
                         } else {
-                            // Id 28
+                            setBanchEntry(28);// Id 28
                             final int u4 = iter.buf[i++];
                             if ((bc & 0xF8) == 0xF0) {
-                                // Id 29
+                                setBanchEntry(29);// Id 29
                                 bc = ((bc & 0x07) << 18) + ((u2 & 0x3F) << 12) + ((u3 & 0x3F) << 6) + (u4 & 0x3F);
                             } else {
-                                // Id 30
+                                setBanchEntry(30);// Id 30
                                 throw iter.reportError("readStringSlowPath", "invalid unicode character");
                             }
 
                             if (bc >= 0x10000) {
-                                // Id 31
+                                setBanchEntry(31);// Id 31
                                 // check if valid unicode
-                                if (bc >= 0x110000)
-                                // Id 32
+                                if (bc >= 0x110000){
+                                    setBanchEntry(32);// Id 32
                                     throw iter.reportError("readStringSlowPath", "invalid unicode character");
+                                }
 
-                                // Id 33
+                                setBanchEntry(33);// Id 33
                                 // split surrogates
                                 final int sup = bc - 0x10000;
                                 if (iter.reusableChars.length == j) {
-                                    // Id 34
+                                    setBanchEntry(34);// Id 34
                                     char[] newBuf = new char[iter.reusableChars.length * 2];
                                     System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                                     iter.reusableChars = newBuf;
                                 }
-                                // Id 35
+                                setBanchEntry(35);// Id 35
                                 iter.reusableChars[j++] = (char) ((sup >>> 10) + 0xd800);
                                 if (iter.reusableChars.length == j) {
-                                    // Id 36
+                                    setBanchEntry(36);// Id 36
                                     char[] newBuf = new char[iter.reusableChars.length * 2];
                                     System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                                     iter.reusableChars = newBuf;
                                 }
-                                // Id 37
+                                setBanchEntry(37);// Id 37
                                 iter.reusableChars[j++] = (char) ((sup & 0x3ff) + 0xdc00);
                                 continue;
                             }
-                            // Id 38
+                            setBanchEntry(38);// Id 38
                         }
                     }
                 }
-                // Id 39
+                setBanchEntry(39);// Id 39
                 if (iter.reusableChars.length == j) {
-                    // Id 40
+                    setBanchEntry(40);// Id 40
                     char[] newBuf = new char[iter.reusableChars.length * 2];
                     System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                     iter.reusableChars = newBuf;
                 }
-                // Id 41
+                setBanchEntry(41);// Id 41
                 iter.reusableChars[j++] = (char) bc;
             }
             throw iter.reportError("readStringSlowPath", "incomplete string");
         } catch (IndexOutOfBoundsException e) {
-            // Id 42
+            setBanchEntry(42);// Id 42
             throw iter.reportError("readString", "incomplete string");
         }
     }

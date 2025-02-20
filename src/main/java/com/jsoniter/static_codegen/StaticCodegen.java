@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileWriter;
 
 public class StaticCodegen {
-    static boolean[] branches = new boolean[50];
     public static void main(String[] args) throws Exception {
 
         if (args.length == 0) {
@@ -40,18 +39,5 @@ public class StaticCodegen {
                 config.whatToCodegen(), new CodegenAccess.StaticCodegenTarget(outputDir));
         com.jsoniter.output.CodegenAccess.staticGenEncoders(
                 config.whatToCodegen(), new com.jsoniter.output.CodegenAccess.StaticCodegenTarget(outputDir));
-        
-        File coverageResult = new File("coverageResult.txt");
-        coverageResult.createNewFile();
-        FileWriter writer = new FileWriter("coverageResult.txt");
-        for(int i = 0; i < branches.length;i++) {
-            if(branches[i]){
-                writer.write("Branch ID "+i+": +");
-            }
-            else{
-                writer.write("Branch ID "+i+": --");
-            }
-        }
-        writer.close();
     }
 }
