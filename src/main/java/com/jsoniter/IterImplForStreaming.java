@@ -1,12 +1,59 @@
 package com.jsoniter;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.jsoniter.any.Any;
 import com.jsoniter.spi.JsonException;
 import com.jsoniter.spi.Slice;
 
-import java.io.IOException;
-
 class IterImplForStreaming {
+
+    private static Map<String, Boolean> branchCoverageOnReadStringSlowPath = new HashMap<>();
+
+    static {
+        branchCoverageOnReadStringSlowPath.put("0_EnterOuterLoop", false);
+        branchCoverageOnReadStringSlowPath.put("1_ExitLoop", false);
+        branchCoverageOnReadStringSlowPath.put("2_Backslash", false);
+        branchCoverageOnReadStringSlowPath.put("3_Case_b", false);
+        branchCoverageOnReadStringSlowPath.put("4_Case_t", false);
+        branchCoverageOnReadStringSlowPath.put("5_Case_n", false);
+        branchCoverageOnReadStringSlowPath.put("6_Case_f", false);
+        branchCoverageOnReadStringSlowPath.put("7_Case_r", false);
+        branchCoverageOnReadStringSlowPath.put("8_Case_Quote", false);
+        branchCoverageOnReadStringSlowPath.put("9_Case_Slash", false);
+        branchCoverageOnReadStringSlowPath.put("10_Case_Backslash", false);
+        branchCoverageOnReadStringSlowPath.put("11_Unicode", false);
+        branchCoverageOnReadStringSlowPath.put("12_HighSurrogateCheck", false);
+        branchCoverageOnReadStringSlowPath.put("13_InvalidSurrogate", false);
+        branchCoverageOnReadStringSlowPath.put("14_ValidHighSurrogate", false);
+        branchCoverageOnReadStringSlowPath.put("15_LowSurrogateCheck", false);
+        branchCoverageOnReadStringSlowPath.put("16_ValidLowSurrogate", false);
+        branchCoverageOnReadStringSlowPath.put("17_InvalidSurrogate", false);
+        branchCoverageOnReadStringSlowPath.put("18_ElseBranch", false);
+        branchCoverageOnReadStringSlowPath.put("19_InvalidSurrogate", false);
+        branchCoverageOnReadStringSlowPath.put("20_DefaultCase", false);
+        branchCoverageOnReadStringSlowPath.put("21_MultiByteCheck", false);
+        branchCoverageOnReadStringSlowPath.put("22_MultiByte_2Byte", false);
+        branchCoverageOnReadStringSlowPath.put("23_Else_MultiByte_2Byte", false);           
+        branchCoverageOnReadStringSlowPath.put("24_MultiByte_3Byte", false);
+        branchCoverageOnReadStringSlowPath.put("25_Else_MultiByte_3Byte", false);
+        branchCoverageOnReadStringSlowPath.put("26_MultiByte_4Byte", false);
+        branchCoverageOnReadStringSlowPath.put("27_InvalidMultiByte", false);
+        branchCoverageOnReadStringSlowPath.put("28_UnicodeCheck", false);
+        branchCoverageOnReadStringSlowPath.put("29_InvalidUnicodeCheck", false);
+        branchCoverageOnReadStringSlowPath.put("30_ExpandBuffer", false);
+        branchCoverageOnReadStringSlowPath.put("31_ExpandBuffer", false);
+        branchCoverageOnReadStringSlowPath.put("32_ExpandBuffer_Final", false);
+    }
+
+    public static void printCoverageForReadStringSlowPath() {
+        System.out.println("Branch Coverage Report for readStringSlowPath():");
+        for (Map.Entry<String, Boolean> entry : branchCoverageOnReadStringSlowPath.entrySet()) {
+            System.out.println(entry.getKey() + ": " + (entry.getValue() ? "Hit" : "Not Hit"));
+        }
+    }
 
     public static final int readObjectFieldAsHash(JsonIterator iter) throws IOException {
         if (nextToken(iter) != '"') {
@@ -391,89 +438,121 @@ class IterImplForStreaming {
     public final static int readStringSlowPath(JsonIterator iter, int j) throws IOException {
         boolean isExpectingLowSurrogate = false;
         for (;;) {
+            branchCoverageOnReadStringSlowPath.put("0_EnterOuterLoop", true);
             int bc = readByte(iter);
             if (bc == '"') {
+                branchCoverageOnReadStringSlowPath.put("1_ExitLoop", true);
                 return j;
             }
             if (bc == '\\') {
+                branchCoverageOnReadStringSlowPath.put("2_Backslash", true);
                 bc = readByte(iter);
                 switch (bc) {
                     case 'b':
+                        branchCoverageOnReadStringSlowPath.put("3_Case_b", true);
                         bc = '\b';
                         break;
                     case 't':
+                        branchCoverageOnReadStringSlowPath.put("4_Case_t", true);
                         bc = '\t';
                         break;
                     case 'n':
+                        branchCoverageOnReadStringSlowPath.put("5_Case_n", true);
                         bc = '\n';
                         break;
                     case 'f':
+                        branchCoverageOnReadStringSlowPath.put("6_Case_f", true);
                         bc = '\f';
                         break;
                     case 'r':
+                        branchCoverageOnReadStringSlowPath.put("7_Case_r", true);
                         bc = '\r';
                         break;
                     case '"':
+                        branchCoverageOnReadStringSlowPath.put("8_Case_Quote", true);
                     case '/':
+                        branchCoverageOnReadStringSlowPath.put("9_Case_Slash", true);
                     case '\\':
+                        branchCoverageOnReadStringSlowPath.put("10_Case_Backslash", true);
                         break;
                     case 'u':
+                        branchCoverageOnReadStringSlowPath.put("11_Unicode", true);
                         bc = (IterImplString.translateHex(readByte(iter)) << 12) +
                                 (IterImplString.translateHex(readByte(iter)) << 8) +
                                 (IterImplString.translateHex(readByte(iter)) << 4) +
                                 IterImplString.translateHex(readByte(iter));
                         if (Character.isHighSurrogate((char) bc)) {
+                            branchCoverageOnReadStringSlowPath.put("12_HighSurrogateCheck", true);
                             if (isExpectingLowSurrogate) {
+                                branchCoverageOnReadStringSlowPath.put("13_InvalidSurrogate", true);
                                 throw new JsonException("invalid surrogate");
                             } else {
+                                branchCoverageOnReadStringSlowPath.put("14_ValidHighSurrogate", true);
                                 isExpectingLowSurrogate = true;
                             }
                         } else if (Character.isLowSurrogate((char) bc)) {
+                            branchCoverageOnReadStringSlowPath.put("15_LowSurrogateCheck", true);
                             if (isExpectingLowSurrogate) {
+                                branchCoverageOnReadStringSlowPath.put("16_ValidLowSurrogate", true);
                                 isExpectingLowSurrogate = false;
                             } else {
+                                branchCoverageOnReadStringSlowPath.put("17_InvalidSurrogate", true);
                                 throw new JsonException("invalid surrogate");
                             }
                         } else {
+                            branchCoverageOnReadStringSlowPath.put("18_ElseBranch", true);
                             if (isExpectingLowSurrogate) {
+                                branchCoverageOnReadStringSlowPath.put("19_InvalidSurrogate", true);
                                 throw new JsonException("invalid surrogate");
                             }
                         }
                         break;
 
                     default:
+                        branchCoverageOnReadStringSlowPath.put("20_DefaultCase", true);
                         throw iter.reportError("readStringSlowPath", "invalid escape character: " + bc);
                 }
             } else if ((bc & 0x80) != 0) {
+                branchCoverageOnReadStringSlowPath.put("21_MultiByteCheck", true);
                 final int u2 = readByte(iter);
                 if ((bc & 0xE0) == 0xC0) {
+                    branchCoverageOnReadStringSlowPath.put("22_MultiByte_2Byte", true);
                     bc = ((bc & 0x1F) << 6) + (u2 & 0x3F);
                 } else {
+                    branchCoverageOnReadStringSlowPath.put("23_Else_MultiByte_2Byte", true);
                     final int u3 = readByte(iter);
                     if ((bc & 0xF0) == 0xE0) {
+                        branchCoverageOnReadStringSlowPath.put("24_MultiByte_3Byte", true);
                         bc = ((bc & 0x0F) << 12) + ((u2 & 0x3F) << 6) + (u3 & 0x3F);
                     } else {
+                        branchCoverageOnReadStringSlowPath.put("25_Else_MultiByte_3Byte", true);
                         final int u4 = readByte(iter);
                         if ((bc & 0xF8) == 0xF0) {
+                            branchCoverageOnReadStringSlowPath.put("26_MultiByte_4Byte", true);
                             bc = ((bc & 0x07) << 18) + ((u2 & 0x3F) << 12) + ((u3 & 0x3F) << 6) + (u4 & 0x3F);
                         } else {
+                            branchCoverageOnReadStringSlowPath.put("27_InvalidMultiByte", true);
                             throw iter.reportError("readStringSlowPath", "invalid unicode character");
                         }
 
                         if (bc >= 0x10000) {
+                            branchCoverageOnReadStringSlowPath.put("28_UnicodeCheck", true);
                             // check if valid unicode
-                            if (bc >= 0x110000)
+                            if (bc >= 0x110000) {
+                                branchCoverageOnReadStringSlowPath.put("29_InvalidUnicodeCheck", true);
                                 throw iter.reportError("readStringSlowPath", "invalid unicode character");
-
+                            }
                             // split surrogates
                             final int sup = bc - 0x10000;
                             if (iter.reusableChars.length == j) {
+                                branchCoverageOnReadStringSlowPath.put("30_ExpandBuffer", true);
                                 char[] newBuf = new char[iter.reusableChars.length * 2];
                                 System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                                 iter.reusableChars = newBuf;
                             }
                             iter.reusableChars[j++] = (char) ((sup >>> 10) + 0xd800);
                             if (iter.reusableChars.length == j) {
+                                branchCoverageOnReadStringSlowPath.put("31_ExpandBuffer", true);
                                 char[] newBuf = new char[iter.reusableChars.length * 2];
                                 System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                                 iter.reusableChars = newBuf;
@@ -485,6 +564,7 @@ class IterImplForStreaming {
                 }
             }
             if (iter.reusableChars.length == j) {
+                branchCoverageOnReadStringSlowPath.put("32_ExpandBuffer_Final", true);
                 char[] newBuf = new char[iter.reusableChars.length * 2];
                 System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
                 iter.reusableChars = newBuf;
