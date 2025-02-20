@@ -391,9 +391,10 @@ class IterImpl {
                 setBanchEntry(41);// Id 41
                 iter.reusableChars[j++] = (char) bc;
             }
+            setBanchEntry(42);// Id 42
             throw iter.reportError("readStringSlowPath", "incomplete string");
         } catch (IndexOutOfBoundsException e) {
-            setBanchEntry(42);// Id 42
+            setBanchEntry(43);// Id 43
             throw iter.reportError("readString", "incomplete string");
         }
     }
