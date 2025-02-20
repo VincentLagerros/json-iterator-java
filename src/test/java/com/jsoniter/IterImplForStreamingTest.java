@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class IterImplForStreamingTest extends TestCase {
 
@@ -77,7 +76,7 @@ public class IterImplForStreamingTest extends TestCase {
 
 			@Override
 			public int read() throws IOException {
-				throw new NotImplementedException();
+				throw new IOException();
 			}
 
 			@Override

@@ -6,6 +6,8 @@ import com.jsoniter.output.JsonStream;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /** A very fast and memory efficient class to encode and decode to and from BASE64 in full accordance
  * with RFC 2045.<br><br>
@@ -200,21 +202,42 @@ abstract class Base64 {
 
     private final static byte[] EMPTY_ARRAY = new byte[0];
 
+    public static void printCoverage() {
+        System.out.println("Branch Coverage Report for decodeFast():");
+        int count = 0;
+        for (int i = 0; i < branchCoverageCount; i++) {
+            System.out.println(i + ": " + (branchCoverage.contains(i) ? "Hit" : "Not Hit"));
+            if (branchCoverage.contains(i)) {
+                count += 1;
+            }
+        }
+        System.out.println("Total branch coverage is " + (100.0 * count / branchCoverageCount + "%"));
+    }
+    private static final Set<Integer> branchCoverage = new HashSet<>();
+    private static int branchCoverageCount = 9;
+
     static byte[] decodeFast(final byte[] sArr, final int start, final int end) {
+        branchCoverage.add(0);
         // Check special case
         int sLen = end - start;
-        if (sLen == 0)
+        if (sLen == 0) {
+            branchCoverage.add(1);
             return EMPTY_ARRAY;
+        }
 
         int sIx = start, eIx = end - 1;    // Start and end index after trimming.
 
         // Trim illegal chars from start
-        while (sIx < eIx && IA[sArr[sIx] & 0xff] < 0)
+        while (sIx < eIx && IA[sArr[sIx] & 0xff] < 0) {
+            branchCoverage.add(2);
             sIx++;
+        }
 
         // Trim illegal chars from end
-        while (eIx > 0 && IA[sArr[eIx] & 0xff] < 0)
+        while (eIx > 0 && IA[sArr[eIx] & 0xff] < 0){
+            branchCoverage.add(3);
             eIx--;
+        }
 
         // get the padding count (=) (0, 1 or 2)
         int pad = sArr[eIx] == '=' ? (sArr[eIx - 1] == '=' ? 2 : 1) : 0;  // Count '=' at end.
@@ -227,6 +250,7 @@ abstract class Base64 {
         // Decode all but the last 0 - 2 bytes.
         int d = 0;
         for (int cc = 0, eLen = (len / 3) * 3; d < eLen;) {
+            branchCoverage.add(4);
             // Assemble three bytes into an int from four "valid" characters.
             int i = IA[sArr[sIx++]] << 18 | IA[sArr[sIx++]] << 12 | IA[sArr[sIx++]] << 6 | IA[sArr[sIx++]];
 
@@ -237,19 +261,25 @@ abstract class Base64 {
 
             // If line separator, jump over it.
             if (sepCnt > 0 && ++cc == 19) {
+                branchCoverage.add(5);
                 sIx += 2;
                 cc = 0;
             }
         }
 
         if (d < len) {
+            branchCoverage.add(6);
             // Decode last 1-3 bytes (incl '=') into 1-3 bytes
             int i = 0;
-            for (int j = 0; sIx <= eIx - pad; j++)
+            for (int j = 0; sIx <= eIx - pad; j++) {
+                branchCoverage.add(7);
                 i |= IA[sArr[sIx++]] << (18 - j * 6);
+            }
 
-            for (int r = 16; d < len; r -= 8)
+            for (int r = 16; d < len; r -= 8) {
+                branchCoverage.add(8);
                 dArr[d++] = (byte) (i >> r);
+            }
         }
 
         return dArr;
