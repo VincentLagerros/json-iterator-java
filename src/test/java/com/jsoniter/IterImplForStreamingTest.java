@@ -1,16 +1,22 @@
 package com.jsoniter;
 
-import com.jsoniter.any.Any;
-import com.jsoniter.spi.JsonException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import junit.framework.TestCase;
-import org.junit.experimental.categories.Category;
+
+import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
+
+import com.jsoniter.any.Any;
+import com.jsoniter.spi.JsonException;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class IterImplForStreamingTest extends TestCase {
+public class IterImplForStreamingTest {
 
+	@Test
 	public void testReadMaxDouble() throws Exception {
 		String maxDouble = "1.7976931348623157e+308";
 		JsonIterator iter = JsonIterator.parse("1.7976931348623157e+308");
@@ -19,7 +25,7 @@ public class IterImplForStreamingTest extends TestCase {
 		assertEquals(maxDouble, number);
 	}
 
-	@Category(StreamingCategory.class)
+	@Test
 	public void testLoadMore() throws IOException {
 		final String originalContent = "1234567890";
 		final byte[] src = ("{\"a\":\"" + originalContent + "\"}").getBytes();
@@ -90,4 +96,10 @@ public class IterImplForStreamingTest extends TestCase {
 			}
 		};
 	}
+
+	// Print the coverage report for the test suite
+    @AfterClass
+    public static void printCoverageReport() {
+        IterImplForStreaming.printCoverageForReadStringSlowPath();
+    }
 }
