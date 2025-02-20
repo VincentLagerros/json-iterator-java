@@ -95,6 +95,32 @@ public class IterImplForStreamingTest {
 			}
 		};
 	}
+
+	@Test
+    public void testDefaultCase() throws Exception {
+        // Input with with non-number character
+        JsonIterator iter = JsonIterator.parse("123a1");
+
+        IterImplForStreaming.numberChars numberChars = IterImplForStreaming.readNumber(iter);
+        String number = new String(numberChars.chars, 0, numberChars.charsLength);
+
+        // When default case is reached numpoints should be returned with only the numbers before the invalid character
+        assertEquals("123", number);
+    }
+
+	
+	@Test
+    public void testExpand() throws Exception {
+        // Input with with more than 32 characters (default reusableChars length)
+        JsonIterator iter = JsonIterator.parse("123456789123456789123456789123456789");
+
+        IterImplForStreaming.numberChars numberChars = IterImplForStreaming.readNumber(iter);
+        String number = new String(numberChars.chars, 0, numberChars.charsLength);
+
+        // When expand case is reached (j == iter.reusableChars.length)
+        assertEquals("123456789123456789123456789123456789", number);
+    }
+
 	// Print the coverage report for the test suite
     @AfterClass
     public static void printCoverageReport() {
