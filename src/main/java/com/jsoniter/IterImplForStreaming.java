@@ -604,6 +604,7 @@ class IterImplForStreaming {
             for (int i = iter.head; i < iter.tail; i++) {
                 branchCoverage.put("2_EnterInnerLoop", true);
                 if (j == iter.reusableChars.length) {
+                    // This branch needs to be tested. assert that the correct number is returned when reusableChars.length <= j
                     branchCoverage.put("3_Expand", true);
                     char[] newBuf = new char[iter.reusableChars.length * 2];
                     System.arraycopy(iter.reusableChars, 0, newBuf, 0, iter.reusableChars.length);
@@ -647,6 +648,8 @@ class IterImplForStreaming {
                         break;
                     default:
                         branchCoverage.put("19_CaseDefault", true);
+                        //  This branch needs to be tested, input with with non-number character assert that 
+                        // the numbers before the illegal character are returned.
                         iter.head = i;
                         numberChars numberChars = new numberChars();
                         numberChars.chars = iter.reusableChars;
