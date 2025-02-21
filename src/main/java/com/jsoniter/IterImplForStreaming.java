@@ -648,7 +648,7 @@ class IterImplForStreaming {
                         break;
                     default:
                         branchCoverage.put("19_CaseDefault", true);
-                        //  This branch needs to be tested, input with with non-number character assert that 
+                        //  This branch needs to be tested, input with non-number character assert that 
                         // the numbers before the illegal character are returned.
                         iter.head = i;
                         numberChars numberChars = new numberChars();
