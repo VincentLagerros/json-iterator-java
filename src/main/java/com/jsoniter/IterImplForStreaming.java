@@ -55,6 +55,10 @@ class IterImplForStreaming {
         }
     }
 
+    public static Map<String, Boolean> getBranchCoverageMap() {
+        return branchCoverageOnReadStringSlowPath;
+    }
+
     public static final int readObjectFieldAsHash(JsonIterator iter) throws IOException {
         if (nextToken(iter) != '"') {
             throw iter.reportError("readObjectFieldAsHash", "expect \"");
@@ -435,6 +439,14 @@ class IterImplForStreaming {
         }
     }
 
+    /**
+     * Requirements documented:
+     * 1. When a simple string is encountered, the function should append all characters into iter.reusableChars and stop at the closing quote.
+     * Making branch 0 and 1 hit
+     *
+     * 2. If the reusableChars array is full before appending a character,
+     *    the function should expand the buffer making branch 32 hit. 
+     */
     public final static int readStringSlowPath(JsonIterator iter, int j) throws IOException {
         boolean isExpectingLowSurrogate = false;
         for (;;) {

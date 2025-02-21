@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 
@@ -96,6 +97,33 @@ public class IterImplForStreamingTest {
 			}
 		};
 	}
+
+    @Test
+    public void testReadStringSlowPathWithSimpleString() throws IOException {
+        IterImplForStreaming.getBranchCoverageMap().replaceAll((k, v) -> false);
+        JsonIterator iter = JsonIterator.parse("\"hello\"");
+        iter.head++; //skip first " makes slow path work
+        int endPos = IterImplForStreaming.readStringSlowPath(iter, 0);
+        String result = new String(iter.reusableChars, 0, endPos);
+        assertEquals("hello", result);
+		assertTrue("Expected 0_EnterOuterLoop to be hit",
+                IterImplForStreaming.getBranchCoverageMap().get("0_EnterOuterLoop"));
+        assertTrue("Expected 1_ExitLoop to be hit",
+                IterImplForStreaming.getBranchCoverageMap().get("1_ExitLoop"));
+    }
+
+    @Test
+    public void testReadStringSlowPathExpandsTheBufferWhenFull() throws IOException {
+        IterImplForStreaming.getBranchCoverageMap().replaceAll((k, v) -> false);
+        JsonIterator iter = JsonIterator.parse("\"XXX\"");
+        iter.head++; //skip first " makes slow path work   
+        iter.reusableChars = new char[1]; // the buffer is small so it seems like it is full
+        int endPos = IterImplForStreaming.readStringSlowPath(iter, 0);
+        String result = new String(iter.reusableChars, 0, endPos);
+        assertEquals("XXX", result);
+        assertTrue("Expected 32_ExpandBuffer_Final to be hit",
+                IterImplForStreaming.getBranchCoverageMap().get("32_ExpandBuffer_Final"));
+    }
 
 	// Print the coverage report for the test suite
     @AfterClass
